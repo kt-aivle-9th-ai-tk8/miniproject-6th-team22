@@ -1,0 +1,1 @@
+export const CATEGORY_OPTIONS = ['소설', '시/에세이', '인문', '사회/경제', '공학/기술', '컴퓨터/IT', '기타'];
