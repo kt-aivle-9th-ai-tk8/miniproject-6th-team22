@@ -1,5 +1,7 @@
 version: 0.2
 
+dir: frontend
+
 phases:
   install:
     runtime-versions:
@@ -7,11 +9,11 @@ phases:
 
   pre_build:
     commands:
-      - cd frontend
       - npm ci
 
   build:
     commands:
+      - export VITE_API_BASE_URL="/api"
       - npm run build
 
   post_build:
