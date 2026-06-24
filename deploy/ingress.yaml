@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: aivle22-ingress
+  name: backend-ingress
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
@@ -16,6 +16,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: aivle22-backend # need to be same as name
+                name: backend-service
                 port:
-                  number: 80          # need to be same as service's port
+                  number: 80
