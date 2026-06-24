@@ -2,7 +2,7 @@ version: 0.2
 
 env:
   variables:
-    S3_BUCKET: "aivle22-prod-website"
+    S3_BUCKET: "aivle22-website"
     BUILD_DIR: "dist"
     CLOUDFRONT_DISTRIBUTION_ID: ""
 
