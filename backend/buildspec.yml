@@ -1,28 +1,36 @@
-version: 0.2
-phases:
-  build:
-    commands:
-      - cd backend
-      - chmod +x ./gradlew && ./gradlew bootJar -x test --no-daemon
-      - docker build -t aivle22-backend:test .    # 임시 태그, push 안 함
-
-# 아래 내용은 eks 구성 후 반영. 위 내용은 codepipeline 정상동작 확인용으로써 실제 배포되지 않음
 # version: 0.2
-# env:
-#   exported-variables:
-#     - IMAGE_TAG    # EKS 배포 액션이 이 변수를 소비하여 매니페스트 치환
 # phases:
-#   pre_build:
-#     commands:
-#       - cd backend
-#       - export IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
-#       - aws ecr get-login-password --region us-east-2 |
-#           docker login --username AWS --password-stdin $ECR_URI
 #   build:
 #     commands:
-#       # 테스트 생략 (-x test): 일정 급박 시 적용, 추후 제거 권장
+#       - cd backend
 #       - chmod +x ./gradlew && ./gradlew bootJar -x test --no-daemon
-#       - docker build -t $ECR_URI:$IMAGE_TAG .
-#   post_build:
-#     commands:
-#       - docker push $ECR_URI:$IMAGE_TAG
+#       - docker build -t aivle22-backend:test .    # 임시 태그, push 안 함
+
+# 아래 내용은 eks 구성 후 반영. 위 내용은 codepipeline 정상동작 확인용으로써 실제 배포되지 않음
+version: 0.2
+
+env:
+  exported-variables:
+    - IMAGE_TAG
+
+phases:
+  pre_build:
+    commands:
+      - cd backend
+      - export IMAGE_TAG=$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "IMAGE_TAG=$IMAGE_TAG"
+      - echo "Login to Amazon ECR"
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ECR_URI
+
+  build:
+    commands:
+      - echo "Build Spring Boot jar"
+      - chmod +x ./gradlew
+      - ./gradlew bootJar -x test --no-daemon
+      - echo "Build Docker image"
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+
+  post_build:
+    commands:
+      - echo "Push Docker image to ECR"
+      - docker push $ECR_URI:$IMAGE_TAG
