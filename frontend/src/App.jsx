@@ -19,7 +19,9 @@ function App() {
   const [serverError, setServerError] = useState(false); // 백엔드 연결 실패 상태
 
   // 백엔드 데이터베이스 연결 주소
-  const API_URL = 'http://localhost:8080/books';
+  //const API_URL = 'http://localhost:8080/books';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_URL = `${API_BASE_URL}/api/books`;
 
   const runBookRequest = async (request, { errorMessage } = {}) => {
     try {
