@@ -172,8 +172,10 @@ public class BookController {
 
         String title = requestBody.get("title");
         String content = requestBody.get("content");
+        String model = requestBody.getOrDefault("model", "gpt-image-2");
+        String quality = requestBody.getOrDefault("quality", "medium");
 
-        String b64Image = bookService.generateImageUrl(title, content, apiKey);
+        String b64Image = bookService.generateImageUrl(title, content, model, quality, apiKey);
 
         Map<String, String> response = Map.of("coverImageUrl", "data:image/png;base64," + b64Image);
         return ResponseEntity.ok(response);

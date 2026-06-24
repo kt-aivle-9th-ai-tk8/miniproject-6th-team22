@@ -173,7 +173,7 @@ public class BookService {
 
         try {
             Map<String, Object> summaryRequest = new HashMap<>();
-            summaryRequest.put("model", "gpt-4o-mini"); // 요약용 가벼운 모델
+            summaryRequest.put("model", "gpt-4o-mini");
             summaryRequest.put("max_tokens", 300);
 
             List<Map<String, String>> messages = new ArrayList<>();
@@ -203,7 +203,6 @@ public class BookService {
         }
 
         // ── 2. 표지 이미지 생성 (Image API 호출) ──────────────────────────────
-        // 프론트에서 받아온 title과 content로 프롬프트 생성
         String prompt = """
             A full-frame, 2D flat graphic vector and illustration design for a front book cover.
             
