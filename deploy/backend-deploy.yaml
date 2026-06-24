@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy          
+  namespace: default            
+  labels:
+    app: backend-deploy    
+spec:
+  replicas: 2                  
+  selector:
+    matchLabels:
+      app: backend-deploy  
+  template:                      
+    metadata:
+      labels:
+        app: backend-deploy    
+    spec:
+      containers:
+      - name: backend-container
+        image: 879772956301.dkr.ecr.us-east-1.amazonaws.com/team22-backend 
+        ports:
+        - containerPort: 8080    
+        resources:
+          requests:
+            cpu: "250m"         
+            memory: "512Mi"     
+          limits:
+            cpu: "500m"       
+            memory: "1Gi"      
