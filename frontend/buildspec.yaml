@@ -1,0 +1,16 @@
+version: 1.0
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - cd frontend
+      - npm install
+  build:
+    commands:
+      - npm run build
+
+  post_build:
+    commands:
+      - aws s3 sync ./dist s3://team22-frontend-bucket --delete
+      - aws cloudfront create-invalidation --distribution-id YOUR_CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
