@@ -9,9 +9,15 @@ import com.aivle.bookapp.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -147,5 +153,93 @@ public class BookService {
         if(command.updatedAt() != null) existing.setUpdatedAt(command.updatedAt());
 
         return BookDto.from(bookRepository.save(existing));
+    }
+
+    @Value("${openai.api.url.summary:https://api.openai.com/v1/chat/completions}")
+    private String summaryApiUrl;
+
+    @Value("${openai.api.url.image:https://api.openai.com/v1/images/generations}")
+    private String imageApiUrl;
+
+    public String generateImageUrl(String title, String content, String model, String quality, String apiKey) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        // ── 1. 도서 내용 요약 (Summary API 호출) ───────────────────────────────
+        String summaryText = content; // 기본값은 원본 내용 (요약 실패 시 대비)
+
+        try {
+            Map<String, Object> summaryRequest = new HashMap<>();
+            summaryRequest.put("model", "gpt-4o-mini");
+            summaryRequest.put("max_tokens", 300);
+
+            List<Map<String, String>> messages = new ArrayList<>();
+            messages.add(Map.of("role", "system", "content",
+                    "너는 도서 요약 전문가야. 제공된 책의 전체 내용을 바탕으로, 독자의 호기심을 자극할 수 있도록 줄거리를 요약해.\n" +
+                            "[필수 조건]:\n" +
+                            "1. 절대 결말이나 중요한 반전(스포일러)을 포함하지 마라.\n" +
+                            "2. 책의 초중반부 설정과 호기심을 자극하는 분위기 위주로 작성해라.\n" +
+                            "3. 핵심 키워드를 포함하여 딱 150자 내외의 짧은 분량으로 요약해라."
+            ));
+            messages.add(Map.of("role", "user", "content", content));
+
+            summaryRequest.put("messages", messages);
+
+            HttpEntity<Map<String, Object>> summaryEntity = new HttpEntity<>(summaryRequest, headers);
+            ResponseEntity<Map> summaryResponse = restTemplate.postForEntity(summaryApiUrl, summaryEntity, Map.class);
+
+            Map<String, Object> body = summaryResponse.getBody();
+            if (body != null && body.containsKey("choices")) {
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+                Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                summaryText = (String) message.get("content");
+                System.out.println("✅ 도서 요약 성공: " + summaryText);
+            }
+        } catch (Exception e) {
+            System.err.println("⚠️ 도서 요약 API 호출 실패 (원본 내용으로 대체됨): " + e.getMessage());
+        }
+
+        // ── 2. 표지 이미지 생성 (Image API 호출) ──────────────────────────────
+        String prompt = """
+            A full-frame, 2D flat graphic vector and illustration design for a front book cover.
+            
+            The book title is "${title}".
+            
+            The core illustration should represent the following story and mood, completely filling the entire canvas up to the edges: ${content}.
+            
+            [Layout & Composition instructions]: 
+            - Full-bleed design: The artistic illustration must completely fill the entire background space with NO borders, NO mockups, NO 3D book shapes, and NO realistic textures.
+            - Flat 2D front-view aspect only. It must look like a digital graphic design file, not a photo of a physical book.
+            - The title "${title}" must be typed cleanly on the cover using medium, highly legible, well-placed typography that harmonizes with the background illustration.
+            
+            [Style instructions]: Modern minimalist graphic design, award-winning book illustration, artistic, high resolution, clean layout.
+            [Crucial]: DO NOT include any 3D book spine, pages, folds, shadows, or background scenery behind the book. DO NOT write any other text except the title."""
+                .replace("${title}", title)
+                .replace("${content}", summaryText);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("model", model);
+        requestBody.put("prompt", prompt);
+        requestBody.put("n", 1);
+        requestBody.put("quality", quality);
+        requestBody.put("output_format", "png");
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(imageApiUrl, entity, Map.class);
+            Map<String, Object> responseBody = response.getBody();
+
+            if (responseBody != null && responseBody.containsKey("data")) {
+                List<Map<String, Object>> dataList = (List<Map<String, Object>>) responseBody.get("data");
+                return (String) dataList.get(0).get("b64_json");
+            }
+            throw new RuntimeException("OpenAI API 응답에 이미지 데이터가 없습니다.");
+        } catch (Exception e) {
+            throw new RuntimeException("이미지 생성 실패: " + e.getMessage());
+        }
     }
 }
