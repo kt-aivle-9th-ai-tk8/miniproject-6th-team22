@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -154,5 +155,29 @@ public class BookController {
         BookDto aiCoverDto = bookService.updateCoverImageUrl(id, command);
         // bookService로부터 받은 aiCoverDto를 프론트엔드를 위한 BookResponse로 재포장
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(BookResponse.from(aiCoverDto));
+    }
+
+    // AI 도서 표지 생성
+    @Operation(summary = "도서 표지 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "생성 성공",
+                    content = @Content(schema = @Schema(implementation = BookResponse.class))),
+            @ApiResponse(responseCode = "401", description = "OpenAI API Key 인증 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("api/books/generate-cover")
+    public ResponseEntity<Map<String, String>> generateCover(
+            @RequestBody Map<String, String> requestBody,
+            @RequestHeader(value = "X-OpenAI-Key", required = true) String apiKey) {
+
+        String title = requestBody.get("title");
+        String content = requestBody.get("content");
+        String model = requestBody.getOrDefault("model", "gpt-image-2");
+        String quality = requestBody.getOrDefault("quality", "medium");
+
+        String b64Image = bookService.generateImageUrl(title, content, model, quality, apiKey);
+
+        Map<String, String> response = Map.of("coverImageUrl", "data:image/png;base64," + b64Image);
+        return ResponseEntity.ok(response);
     }
 }
