@@ -13,9 +13,8 @@ phases:
   build:
     commands:
       - npm run build
-      - find . -name index.html
 
-artifacts:
-  base-directory: frontend/dist
-  files:
-    - '**/*'
+  post_build:
+    commands:
+      - aws s3 sync ./dist s3://aivle22-website --delete
+      - aws cloudfront create-invalidation --distribution-id E2633XN9AUHA1I --paths "/*"
