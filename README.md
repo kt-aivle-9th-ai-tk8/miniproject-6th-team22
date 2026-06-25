@@ -80,3 +80,34 @@ MaxSurge 설정을 활용해 배포 중에도 트래픽 수용 용량 그대로 
 
 * **상태 확인 및 트래픽 제어:** 신규 Pod가 완전히 구동되어 Ready 상태가 되기 전까지 트래픽 유입을 차단하여 배포 초기 유저가 에러를 겪지 않도록 제어
 
+---
+
+## EKS HPA Auto Scaling
+​
+<img width="665" height="307" alt="image" src="https://github.com/user-attachments/assets/c2ae9d3c-bfee-483a-a450-a94caeab936a" />
+
+* **도입 배경:** CI/CD를 통한 배포 자동화 이후, AI 도서 표지 생성 등 리소스 소모가 큰 작업 시 발생하는 갑작스러운 트래픽 폭주를 방어하기 위함
+
+* **HPA 적용:** Pod의 CPU 사용률이 설정된 임계치를 초과할 경우 작동
+
+* **부하 증가 시:** Kubernetes가 파드 개수를 자동으로 늘려 트래픽 분산 및 서버 다운 방지
+
+* **부하 감소 시:** 기본 파드 개수로 다시 축소하여 불필요한 클라우드 리소스 비용 절감
+
+* **검증 완료:** 자체 부하 테스트를 통해 임계치 도달 시 서버가 정상적으로 동적 확장됨을 확인
+
+---
+
+## HPA Pod 스케일링 검증
+
+<img width="626" height="96" alt="image" src="https://github.com/user-attachments/assets/841f9b18-5ab0-46fa-b4d6-a8a061796568" />
+
+**1단계: 평상시** 
+
+<img width="626" height="98" alt="image" src="https://github.com/user-attachments/assets/40dbaacd-5655-4657-88dd-93437fbf2baf" />
+
+**2단계: 얕은 부하**
+
+<img width="627" height="309" alt="image" src="https://github.com/user-attachments/assets/2fae8773-8631-4b21-b856-565ff052a5a6" />
+
+**3단계: 집중 부하 및 한계 테스트**
