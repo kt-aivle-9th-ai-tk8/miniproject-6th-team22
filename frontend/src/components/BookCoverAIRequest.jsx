@@ -25,7 +25,7 @@ async function handleGenerateCover() {
 
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8080/api/books/generate-cover`, {
+            const response = await fetch(`/api/books/generate-cover`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
