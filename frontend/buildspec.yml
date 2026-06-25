@@ -13,9 +13,9 @@ phases:
 
   build:
     commands:
-      - export VITE_API_BASE_URL="/api"
+      # 코드단에서 api 경로를 처리하므로 빈칸으로 수정
+      - export VITE_API_URL=""
       - npm run build
-
   post_build:
     commands:
       - aws s3 sync ./dist s3://aivle22-website --delete
