@@ -17,6 +17,7 @@ AI 책 표지 자동 생성 기반 도서 관리 시스템
 | **이성호** | 💻 Dev | E2E 체크 리스트 작성, 부하 테스트 | 서기 |
 
 ---
+
 ## System Environment
 * **Frontend:** React (Vite 기반 SPA 개발 환경)
 * **Backend:** Spring Boot, Java
@@ -26,8 +27,26 @@ AI 책 표지 자동 생성 기반 도서 관리 시스템
 * **Container:** Docker, Kubernetes
 
 ---
+
+## System architecture
+<img width="586" height="602" alt="시스템 아키텍처" src="https://github.com/user-attachments/assets/b8fc2746-7a57-46c8-94d7-7b977e4bb441" />
+
+
+---
 ## 디렉토리 구조
 ```
 AIVLE_Mini-Project_4/
-├──
+└── backend/
+    ├── ...
+    └──buildspec.yml
+└── frontend/
+    ├── ...
+    └──buildspec.yml
+└── deploy/
+    ├── .gitkeep
+    ├── backend-deploy.yaml
+    ├── backend-hpa.yaml
+    ├── backend-ingress.yaml
+    └── backend-service.yaml
+└── .gitignore
 ```
