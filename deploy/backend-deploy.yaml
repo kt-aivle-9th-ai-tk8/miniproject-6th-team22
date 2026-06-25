@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: backend-container
-        image: 879772956301.dkr.ecr.us-east-2.amazonaws.com/aivle22-backend:latest # 추후 `:latest`를 `:$IMAGE_TAG` 로 변경
+        image: 879772956301.dkr.ecr.us-east-2.amazonaws.com/aivle22-backend:$IMAGE_TAG
         ports:
         - containerPort: 8080    
         envFrom:
