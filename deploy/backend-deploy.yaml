@@ -24,7 +24,7 @@ spec:
         - configMapRef:
             name: backend-config
         - secretRef:
-            name: backend-db
+            name: backend-secret
         resources:
           requests:
             cpu: "250m"         
