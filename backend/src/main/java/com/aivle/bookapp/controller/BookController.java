@@ -165,7 +165,7 @@ public class BookController {
             @ApiResponse(responseCode = "401", description = "OpenAI API Key 인증 실패",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    @PostMapping("api/books/generate-cover")
+    @PostMapping("/books/generate-cover")
     public ResponseEntity<Map<String, String>> generateCover(
             @RequestBody Map<String, String> requestBody,
             @RequestHeader(value = "X-OpenAI-Key", required = true) String apiKey) {
