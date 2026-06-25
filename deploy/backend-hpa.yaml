@@ -1,0 +1,33 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: backend-hpa
+  labels:
+    app: backend-deploy
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: backend-deploy
+  minReplicas: 2
+  maxReplicas: 6                   # ★ /27 서브넷 + PD off라 노드 용량 안쪽
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60   # CPU 평균 60% 넘으면 스케일아웃
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 0      # 부하 늘면 즉시 증가
+      policies:
+        - type: Pods
+          value: 2                       # 한 번에 최대 2파드씩 증가
+          periodSeconds: 30
+    scaleDown:
+      stabilizationWindowSeconds: 120    # 부하 줄어도 120초 관찰 후 감소 (출렁임 방지)
+      policies:
+        - type: Pods
+          value: 1                       # 한 번에 1파드씩 감소
+          periodSeconds: 60
