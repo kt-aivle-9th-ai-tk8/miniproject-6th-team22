@@ -7,17 +7,14 @@ phases:
 
   pre_build:
     commands:
-      - cd frontend
       - npm ci
 
   build:
     commands:
       # 코드단에서 api 경로를 처리하므로 빈칸으로 수정
-      - cd frontend
       - export VITE_API_URL=""
       - npm run build
   post_build:
     commands:
-      - cd frontend
       - aws s3 sync ./dist s3://aivle22-website --delete
       - aws cloudfront create-invalidation --distribution-id E2633XN9AUHA1I --paths "/*"
