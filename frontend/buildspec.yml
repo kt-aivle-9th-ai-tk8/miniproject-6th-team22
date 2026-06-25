@@ -14,6 +14,5 @@ phases:
       - npm run build
   post_build:
     commands:
-      - cd frontend
       - aws s3 sync ./dist s3://aivle22-website --delete
       - aws cloudfront create-invalidation --distribution-id E2633XN9AUHA1I --paths "/*"
