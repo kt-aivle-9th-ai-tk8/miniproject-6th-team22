@@ -73,7 +73,7 @@ AIVLE_Mini-Project_4/
 
 ## 무중단 배포 전략
 
-<img width="454" height="49" alt="image" src="https://github.com/user-attachments/assets/4d6b9b3f-4069-428f-83fa-dcc7c2759133" />
+<img width="908" height="98" alt="image" src="https://github.com/user-attachments/assets/4d6b9b3f-4069-428f-83fa-dcc7c2759133" />
 
 * **Rolling Update 메커니즘:** 구버전 Pod를 한 번에 죽이지 않고 신버전 Pod를 점진적으로 생성하고 교체.
 MaxSurge 설정을 활용해 배포 중에도 트래픽 수용 용량 그대로 유지.
