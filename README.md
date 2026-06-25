@@ -50,3 +50,33 @@ AIVLE_Mini-Project_4/
     └── backend-service.yaml
 └── .gitignore
 ```
+---
+## AWS CodePipelin
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img width="718" height="338" alt="image" src="https://github.com/user-attachments/assets/b6718526-bf8c-464d-859b-f318dbd4556a" />
+      <br><br>
+      <b>Source</b> : GitHub에서 최신 버전의 프론트엔드 소스 코드를 AWS로 가져옴<br>
+      <b>Build</b> : 컨테이너 환경에서 의존성 패키지를 설치하고 배포용 정적파일을 빌드
+    </td>
+    <td width="50%" valign="top">
+      <img width="723" height="338" alt="image" src="https://github.com/user-attachments/assets/a0cd6651-6629-4b28-aa02-bf5ff53de2a1" />
+      <br><br>
+      <b>Source</b> : GitHub에서 최신 버전의 백엔드 소스 코드를 AWS로 가져옴<br>
+      <b>Build</b> : 컴파일러가 Dockerfile을 실행하여 파이프라인 내 소스 코드를 바탕으로 컨테이너 이미지 빌드
+    </td>
+  </tr>
+</table>
+
+---
+
+## 무중단 배포 전략
+
+<img width="454" height="49" alt="image" src="https://github.com/user-attachments/assets/4d6b9b3f-4069-428f-83fa-dcc7c2759133" />
+
+* **Rolling Update 메커니즘:** 구버전 Pod를 한 번에 죽이지 않고 신버전 Pod를 점진적으로 생성하고 교체.
+MaxSurge 설정을 활용해 배포 중에도 트래픽 수용 용량 그대로 유지.
+
+* **상태 확인 및 트래픽 제어:** 신규 Pod가 완전히 구동되어 Ready 상태가 되기 전까지 트래픽 유입을 차단하여 배포 초기 유저가 에러를 겪지 않도록 제어
+
