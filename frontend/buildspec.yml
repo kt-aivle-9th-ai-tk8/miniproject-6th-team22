@@ -10,7 +10,7 @@ phases:
       - cd frontend
       - npm ci
       # 코드단에서 api 경로를 처리하므로 빈칸으로 수정
-      - export VITE_API_URL=""
+      - export VITE_API_BASE_URL=""
       - npm run build
   post_build:
     commands:
